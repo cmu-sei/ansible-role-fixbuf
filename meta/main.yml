@@ -14,6 +14,7 @@ galaxy_info:
   author: Matt Heckathorn
   description: A role for installing netsa libfixbuf
   company: CERT
+  role_name: fixbuf
 
   # If the issue tracker for your role is not on github, uncomment the
   # next line and provide a value
