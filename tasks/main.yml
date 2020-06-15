@@ -1,0 +1,108 @@
+---
+# ansible-role-fixbuf
+# Copyright 2020 Carnegie Mellon University.
+# NO WARRANTY. THIS CARNEGIE MELLON UNIVERSITY AND SOFTWARE ENGINEERING INSTITUTE MATERIAL IS FURNISHED ON AN "AS-IS" BASIS. CARNEGIE MELLON UNIVERSITY MAKES NO WARRANTIES OF ANY KIND, EITHER EXPRESSED OR IMPLIED, AS TO ANY MATTER INCLUDING, BUT NOT LIMITED TO, WARRANTY OF FITNESS FOR PURPOSE OR MERCHANTABILITY, EXCLUSIVITY, OR RESULTS OBTAINED FROM USE OF THE MATERIAL. CARNEGIE MELLON UNIVERSITY DOES NOT MAKE ANY WARRANTY OF ANY KIND WITH RESPECT TO FREEDOM FROM PATENT, TRADEMARK, OR COPYRIGHT INFRINGEMENT.
+# Released under a MIT (SEI)-style license, please see license.txt or contact permission@sei.cmu.edu for full terms.
+# [DISTRIBUTION STATEMENT A] This material has been approved for public release and unlimited distribution.  Please see Copyright notice for non-US Government use and distribution.
+# CERT® is registered in the U.S. Patent and Trademark Office by Carnegie Mellon University.
+# This Software includes and/or makes use of the following Third-Party Software subject to its own license:
+# 1. ansible (https://github.com/ansible/ansible/tree/devel/licenses) Copyright 2019 Red Hat, Inc.
+# 2. molecule (https://github.com/ansible-community/molecule/blob/master/LICENSE) Copyright 2018 Red Hat, Inc.
+# 3. testinfra (https://github.com/philpep/testinfra/blob/master/LICENSE) Copyright 2020 Philippe Pepiot.
+# DM20-0460
+# tasks file for fixbuf
+
+- name: Gather OS specific variables
+  include_vars: "{{ item }}"
+  with_first_found:
+    - "{{ ansible_distribution|lower }}-{{ ansible_distribution_version }}.yml"
+    - "{{ ansible_distribution|lower }}.yml"
+    - "{{ ansible_os_family|lower }}.yml"
+
+- name: Check if EPEL repo is already configured. (RHEL/CentOS)
+  stat: path={{ epel_repofile_path }}
+  register: epel_repofile_result
+  when: ansible_os_family|lower == "redhat"
+
+- name: Install EPEL repo. (RHEL/CentOS)
+  yum:
+    name: "{{ epel_repo_url }}"
+    state: present
+  register: result
+  until: result is succeeded
+  retries: 5
+  delay: 10
+  when: ansible_os_family|lower == "redhat" and not epel_repofile_result.stat.exists
+
+- name: Import EPEL GPG key. (RHEL/CentOS)
+  rpm_key:
+    key: "{{ epel_repo_gpg_key_url }}"
+    state: present
+  when: ansible_os_family|lower == "redhat" and not epel_repofile_result.stat.exists
+  ignore_errors: "{{ ansible_check_mode }}"
+
+- name: make sure necessary packages are installed
+  package:
+    name: "{{ packages }}"
+    state: present
+    update_cache: yes
+
+- name: Add local libs to ld config
+  template:
+    src: "{{ silk_ldconfig_template }}"
+    dest: "{{ silk_ldconfig_file_path }}"
+    mode: 0640
+    owner: root
+    group: root
+
+- name: check for fixbuf installation
+  shell: "PKG_CONFIG_PATH=$PKG_CONFIG_PATH:/usr/local/lib/pkgconfig pkg-config --modversion libfixbuf"
+  changed_when: false
+  register: installed_fixbuf_version
+  failed_when: installed_fixbuf_version is failed and not 'Package libfixbuf was not found' in installed_fixbuf_version.stderr
+
+- when: installed_fixbuf_version.stdout != fixbuf_version
+  block:
+    - name: Run ldconfig
+      command: ldconfig
+
+    - name: download fixbuf...
+      get_url:
+        url: '{{ fixbuf_url }}'
+        dest: /tmp/{{ fixbuf_tgz }}
+        mode: 0644
+        checksum: '{{ fixbuf_checksum }}'
+        timeout: '{{ fixbuf_timeout }}'
+
+    - name: unarchive fixbuf....
+      unarchive:
+        remote_src: yes
+        dest: '/tmp'
+        src: /tmp/{{ fixbuf_tgz }}
+        creates: '/tmp/{{ fixbuf_name }}'
+
+    - name: configure fixbuf
+      command: "./configure"
+      args:
+        chdir: "/tmp/{{ fixbuf_name }}"
+
+    - name: Build the default target
+      make:
+        chdir: "/tmp/{{ fixbuf_name }}"
+
+    - name: Run Install target
+      make:
+        chdir: "/tmp/{{ fixbuf_name }}"
+        target: install
+
+    - name: Run ldconfig
+      command: ldconfig
+  always:
+    - name: cleanup tar...
+      file:
+        path: /tmp/{{ fixbuf_tgz }}
+        state: absent
+    - name: cleanup unpacked...
+      file:
+        path: /tmp/{{ fixbuf_name }}
+        state: absent
