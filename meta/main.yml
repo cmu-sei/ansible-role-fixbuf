@@ -50,7 +50,7 @@ galaxy_info:
       versions:
         - 7
     - name: Ubuntu
-      version:
+      versions:
         - bionic
   # - name: SomePlatform
   #   versions:
