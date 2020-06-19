@@ -10,29 +10,4 @@
 # 2. molecule (https://github.com/ansible-community/molecule/blob/master/LICENSE) Copyright 2018 Red Hat, Inc.
 # 3. testinfra (https://github.com/philpep/testinfra/blob/master/LICENSE) Copyright 2020 Philippe Pepiot.
 # DM20-0460
-galaxy_info:
-  author: Matt Heckathorn
-  description: A role for installing netsa libfixbuf
-  company: CERT
-  role_name: fixbuf
-  license: license (MIT)
-
-  min_ansible_version: 2.4
-  platforms:
-    - name: EL
-      versions:
-        - 7
-    - name: Ubuntu
-      versions:
-        - bionic
-
-  galaxy_tags:
-    - cert
-    - netsa
-    - silk
-    - netflow
-    - sei
-
-dependencies:
-  - role: geerlingguy.repo-epel
-    when: ansible_os_family|lower == "redhat"
+- src: geerlingguy.repo-epel
