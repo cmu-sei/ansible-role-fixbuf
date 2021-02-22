@@ -11,12 +11,13 @@
 # 3. testinfra (https://github.com/philpep/testinfra/blob/master/LICENSE) Copyright 2020 Philippe Pepiot.
 # DM20-0460
 # defaults file for fixbuf
-fixbuf_version: "2.4.0"
+fixbuf_version: "2.4.1"
 fixbuf_name: "libfixbuf-{{ fixbuf_version }}"
 fixbuf_tgz: "{{ fixbuf_name }}.tar.gz"
 fixbuf_url: "http://tools.netsa.cert.org/releases/{{ fixbuf_tgz }}"
 fixbuf_timeout: 10
 fixbuf_checksums:
+  '2.4.1': sha256:8c535d48120b08df1731de709f2dbd2ba8bce568ad64cac34826102caf594d84
   '2.4.0': sha256:bf20f9f7986a525ea6cc648d32f4ba30bfeb2a83f8c830bc39c48dfa7a415175
   '2.3.0': sha256:ed63314f21a7a6bbf0d08da416403237a867c3f3496d061f10e148e6d8ecea63
 
