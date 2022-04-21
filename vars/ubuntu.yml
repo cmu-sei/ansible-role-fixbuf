@@ -34,5 +34,4 @@ packages:
   - libsnappy1v5
   - libsnappy-dev
   - python-pip
-  - python-dev
   - libgnutls28-dev
