@@ -12,12 +12,27 @@
 # DM20-0460
 # tasks file for fixbuf
 
+- name: Include version-specific variables for CentOS/RHEL.
+  include_vars: "{{ item }}" 
+  with_first_found: 
+    - "redhat-{{ ansible_distribution_version.split('.')[0] }}.yml"
+    - "redhat.yml"
+  when: >-
+    ansible_distribution in [
+      'CentOS',
+      'Red Hat Enterprise Linux',
+      'RedHat',
+      'Rocky',
+      'AlmaLinux'
+    ]
+
 - name: Gather OS specific variables
   include_vars: "{{ item }}"
   with_first_found:
-    - "{{ ansible_distribution|lower }}-{{ ansible_distribution_version }}.yml"
+    - "{{ ansible_distribution|lower }}-{{ ansible_distribution_version.split('.')[0] }}.yml"
     - "{{ ansible_distribution|lower }}.yml"
     - "{{ ansible_os_family|lower }}.yml"
+  when: ansible_distribution == 'Ubuntu' or ansible_distribution == 'Debian'
 
 - name: make sure necessary packages are installed
   package:
