@@ -33,7 +33,7 @@ testinfra_hosts = testinfra.utils.ansible_runner.AnsibleRunner(
 
 
 def test_fixbuf_version(host):
-    version = "2.4.1"
+    version = "2.4.2"
     command = """PKG_CONFIG_PATH=$PKG_CONFIG_PATH:/usr/local/lib/pkgconfig \
                  pkg-config --modversion libfixbuf"""
 
