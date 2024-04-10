@@ -21,7 +21,6 @@ packages:
   - byacc
   - cscope
   - ctags
-  - curl
   - diffstat
   - doxygen
   - elfutils

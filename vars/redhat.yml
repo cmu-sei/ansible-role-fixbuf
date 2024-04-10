@@ -21,7 +21,6 @@ packages:
   - byacc
   - cscope
   - ctags
-  - curl
   - diffstat
   - doxygen
   - elfutils
@@ -45,7 +44,6 @@ packages:
   - glib2
   - glib2-devel
   - python3-devel
-  - libpcap-devel
   - pcre-devel
   - wget
   - net-tools

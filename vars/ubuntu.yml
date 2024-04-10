@@ -14,7 +14,6 @@ packages:
   - bison
   - build-essential
   - cmake
-  - curl
   - flex
   - g++
   - gcc
