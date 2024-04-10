@@ -48,4 +48,4 @@ galaxy_info:
 
 dependencies:
   - role: geerlingguy.repo-epel
-    when: ansible_os_family|lower == "redhat"
+    when: ansible_os_family|lower == "redhat" and not ansible_distribution == "Fedora"
