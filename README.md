@@ -3,6 +3,15 @@ Fixbuf
 
 A role for installing the netsa tools fixbuf library. libfixbuf provides an implementation of the [IPFIX](http://www.ietf.org/html.charters/ipfix-charter.html) Protocol as a C library, for building IPFIX Collecting and Exporting Processes. See the API [documentation](https://tools.netsa.cert.org/fixbuf/libfixbuf/index.html) for details, including build instructions and known issues. 
 
+Requirements
+------------
+
+For RockyLinux and Alma:
+
+community.general.dnf_config_manager requires ansible community.general >=8.2.0.
+
+Redhat flavored distros require EPEL.
+
 Role Variables
 --------------
 
