@@ -24,15 +24,20 @@ galaxy_info:
       versions:
         - 7
         - 8
-    - name: Ubuntu
+        - 9
+    - name: Fedora
       versions:
-        - xenial
-        - bionic
-        - focal
+        - all
     - name: Debian
       versions:
         - buster
         - bullseye
+        - bookworm
+    - name: Ubuntu
+      versions:
+        - bionic
+        - focal
+        - jammy
 
   galaxy_tags:
     - cert
@@ -43,4 +48,4 @@ galaxy_info:
 
 dependencies:
   - role: geerlingguy.repo-epel
-    when: ansible_os_family|lower == "redhat"
+    when: ansible_os_family|lower == "redhat" and not ansible_distribution == "Fedora"
