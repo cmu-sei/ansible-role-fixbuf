@@ -35,6 +35,12 @@
     - "{{ ansible_os_family|lower }}.yml"
   when: ansible_distribution == 'Ubuntu' or ansible_distribution == 'Debian'
 
+- name: Ensure the crb repository is enabled on rockylinux & alma
+  community.general.dnf_config_manager:
+    name: crb
+    state: enabled
+  when: (ansible_distribution == "Rocky" or ansible_distribution == "AlmaLinux") and ansible_distribution_major_version == "9"
+
 - name: make sure necessary packages are installed
   package:
     name: "{{ packages }}"
